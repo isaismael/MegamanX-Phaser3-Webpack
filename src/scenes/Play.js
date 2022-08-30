@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import Player from "../entities/Player";
-import Crusher from "../entities/Crusher";
+import Enemies from "../groups/Enemies";
 
 class Play extends Phaser.Scene {
     constructor(config) {
@@ -13,17 +13,18 @@ class Play extends Phaser.Scene {
         const layers = this.createLayers(map);
         const playerZones = this.getPlayerZones(layers.playerZones);
         const player = this.createPlayer(playerZones.start);
-        const enemy = this.createEnemy();
+        const enemies = this.createEnemies(layers.enemySpawns);
         //
-        this.createEnemyColliders(enemy, {
+        this.createEnemyColliders(enemies, {
             colliders: {
-                platformsColliders: layers.platformsColliders
+                platformsColliders: layers.platformsColliders,
+                player
             }
         });
         //
         this.createPlayerColliders(player, {
             colliders: {
-                platformsColliders: layers.platformsColliders
+                platformsColliders: layers.platformsColliders,
             }
         });
         //
@@ -42,6 +43,7 @@ class Play extends Phaser.Scene {
         const platformsColliders = map.createStaticLayer('platforms_colliders', tileset);
         const platforms = map.createStaticLayer('platforms', tileset);
         const playerZones = map.getObjectLayer('player_zones');
+        const enemySpawns = map.getObjectLayer('enemy_spawns');
         //
         platformsColliders.setCollisionByProperty({ collides: true })
         //
@@ -49,6 +51,7 @@ class Play extends Phaser.Scene {
             platforms,
             platformsColliders,
             playerZones,
+            enemySpawns
         }
     }
 
@@ -56,13 +59,21 @@ class Play extends Phaser.Scene {
         return new Player(this, start.x, start.y);
     }
 
-    createEnemy () {
-        return new Crusher(this, 400, 200)
+    createEnemies(spawnLayer) {
+        const enemies = new Enemies(this);
+        const enemyTypes = enemies.getTypes();
+
+        spawnLayer.objects.forEach(spawnPoint => {
+            const enemy = new enemyTypes[spawnPoint.type](this, spawnPoint.x, spawnPoint.y);
+            enemies.add(enemy)
+        })
+
+        return enemies;
     }
 
-    createEnemyColliders(enemy, { colliders }) {
-        enemy
-            .addCollider(colliders.platformsColliders);
+    createEnemyColliders(enemies, { colliders }) {
+        enemies.addCollider(colliders.platformsColliders);
+        enemies.addCollider(colliders.player);
     }
 
     createPlayerColliders(player, { colliders }) {
@@ -77,7 +88,7 @@ class Play extends Phaser.Scene {
         this.cameras.main.startFollow(player)
     }
 
-    getPlayerZones (playerZonesLayer) {
+    getPlayerZones(playerZonesLayer) {
         const playerZones = playerZonesLayer.objects;
         return {
             start: playerZones.find(zone => zone.name === 'startZone'),
@@ -86,8 +97,8 @@ class Play extends Phaser.Scene {
     }
     createEndOfLevel(end, player) {
         const endOfLevel = this.physics.add.sprite(end.x, end.y, 'end')
-        .setAlpha(0)
-        .setSize(5, this.config.height);
+            .setAlpha(0)
+            .setSize(5, this.config.height);
 
         const eolOverlap = this.physics.add.overlap(player, endOfLevel, () => {
             eolOverlap.active = false;
