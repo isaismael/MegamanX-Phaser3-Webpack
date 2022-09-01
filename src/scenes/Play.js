@@ -101,9 +101,14 @@ class Play extends Phaser.Scene {
         player.takesHit(enemy);
     }
 
+    onWeaponHit(entity, source) {
+        entity.takesHit(source);
+    }
+
     createEnemyColliders(enemies, { colliders }) {
         enemies.addCollider(colliders.platformsColliders);
         enemies.addCollider(colliders.player, this.onPlayerCollision);
+        enemies.addCollider(colliders.player.projectiles, this.onWeaponHit);
     }
 
     createPlayerColliders(player, { colliders }) {
