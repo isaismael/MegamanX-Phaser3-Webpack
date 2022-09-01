@@ -22,10 +22,13 @@ class Enemy  extends Phaser.Physics.Arcade.Sprite {
         this.gravity = 500;
         this.speed = 100;
         this.timeForLastTurn = 0;
+        
+        this.damage = 20;
+
         this.platformCollidersLayer = null;
         this.rayGraphics = this.scene.add.graphics({lineStyle: {
             width: 2,
-            color: 0xaa00aa
+            color: 0
         }});
         //
         this.body.setGravityY(this.gravity);
