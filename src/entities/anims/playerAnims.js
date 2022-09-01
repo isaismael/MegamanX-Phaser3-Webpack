@@ -54,5 +54,18 @@ export default (anims) => {
         frameRate: 10,
         repeat: -1
     })
+    // ATTACK-IDLE
+    anims.create({
+        key:'attackidle',
+        frames: anims.generateFrameNumbers(
+            'player',
+            {
+                start: 24,
+                end: 25
+            }
+        ),
+        frameRate: 10,
+        repeat: 1
+    })
     
 }

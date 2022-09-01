@@ -7,7 +7,8 @@ class Preload extends Phaser.Scene {
 
     preload(){
         this.load.tilemapTiledJSON('map', 'assets/autopista_map.json');
-        this.load.image('tiles-1', 'assets/escenario.png')
+        this.load.image('tiles-1', 'assets/escenario.png');
+        this.load.image('attack-one', 'assets/attack_one.png');
         // SpriteSheet
         // PLAYER
         this.load.spritesheet('player', 'assets/player_spritesheet.png', {
@@ -15,7 +16,7 @@ class Preload extends Phaser.Scene {
         })
         // CRUSHER
         this.load.spritesheet('crusher', 'assets/enemies/crusher_spritesheet.png', {
-            frameWidth: 45, frameHeight: 45
+            frameWidth: 45, frameHeight: 36
         })
 
     }

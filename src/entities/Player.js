@@ -2,6 +2,8 @@ import Phaser from "phaser";
 import HealthBar from "../hud/HealthBar";
 import initAnimations from './anims/playerAnims'
 import collidable from "../mixins/collidable";
+import Projectile from "../attacks/Projectile";
+import Projectiles from "../attacks/Projectiles";
 
 class Player extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y) {
@@ -18,13 +20,16 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     }
 
     init() {
-        this.setScale(2.2)
+        this.setScale(2.4)
         //
         this.gravity = 500;
         this.playerSpeed = 250
         this.hasBeenHit = false;
         this.bounceVelocity = 250;
         this.cursors = this.scene.input.keyboard.createCursorKeys();
+        //
+        this.lastDirection = Phaser.Physics.Arcade.FACING_RIGHT;
+        this.projectiles = new Projectiles(this.scene);
         //
         this.health = 100;
         this.hp = new HealthBar(
@@ -35,9 +40,15 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         //
         this.body.setGravityY(this.gravity);
         this.setCollideWorldBounds(true);
-        this.setOrigin(0.5, 1)
+        this.setOrigin(0.5, 1);
+        this.setSize(30, 40)
         //
-        initAnimations(this.scene.anims)
+        initAnimations(this.scene.anims);
+
+        this.scene.input.keyboard.on('keydown-Q', () => {
+            this.play('attackidle', true)
+            this.projectiles.fireProjectile(this);
+        })
     }
 
     initEvents() {
@@ -53,9 +64,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         const onFloor = this.body.onFloor();
 
         if (left.isDown) {
+            this.lastDirection = Phaser.Physics.Arcade.FACING_LEFT;
             this.setFlipX(true)
             this.setVelocityX(-this.playerSpeed)
         } else if (right.isDown) {
+            this.lastDirection = Phaser.Physics.Arcade.FACING_RIGHT;
             this.setFlipX(false)
             this.setVelocityX(this.playerSpeed)
         } else {
@@ -65,7 +78,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         if ((space.isDown || up.isDown) && onFloor) {
             this.setVelocityY(-this.playerSpeed * 1.3)
         }
-
+        //
+        if (this.anims.isPlaying && this.anims.getCurrentKey() === 'attackidle') {
+            return
+        }
         // Play Anims
         onFloor ?
             this.body.velocity.x !== 0 ?
