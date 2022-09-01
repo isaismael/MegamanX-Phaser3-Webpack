@@ -41,5 +41,18 @@ export default (anims) => {
         frameRate: 10,
         repeat: -1
     })
+    // DAMAGE
+    anims.create({
+        key:'damage',
+        frames: anims.generateFrameNumbers(
+            'player',
+            {
+                start: 21,
+                end: 23
+            }
+        ),
+        frameRate: 10,
+        repeat: -1
+    })
     
 }
