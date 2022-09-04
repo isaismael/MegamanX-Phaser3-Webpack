@@ -18,6 +18,10 @@ class Preload extends Phaser.Scene {
         this.load.spritesheet('crusher', 'assets/enemies/crusher_spritesheet.png', {
             frameWidth: 45, frameHeight: 36
         })
+        // HIT-ENEMY
+        this.load.spritesheet('hit-enemy', 'assets/hit-enemy.png', {
+            frameWidth: 17, frameHeight: 16
+        })
 
     }
 
