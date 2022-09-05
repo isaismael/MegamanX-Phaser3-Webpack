@@ -10,8 +10,10 @@ class Crusher extends Enemy {
 
     update(time, delta) {
         super.update(time, delta);
+        if(!this.active) {return}
         this.play('crusher-idle', true)
     }
+
 }
 
 export default Crusher;

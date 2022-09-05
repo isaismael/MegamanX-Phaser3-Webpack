@@ -23,7 +23,7 @@ class Enemy  extends Phaser.Physics.Arcade.Sprite {
         this.speed = 100;
         this.timeForLastTurn = 0;
         
-        this.health = 40;
+        this.health = 20;
         this.damage = 20;
 
         this.platformCollidersLayer = null;
@@ -45,6 +45,14 @@ class Enemy  extends Phaser.Physics.Arcade.Sprite {
     }
 
     update(time, delta) {
+        if(this.getBounds().bottom > 600) {
+            this.scene.events.removeListener(Phaser.Scenes.Events.UPDATE, this.update, this);
+            this.setActive(false);
+            this.rayGraphics.clear();
+            this.destroy();
+            return;
+        }
+
         const { ray, hasHit } = this.raycast(this.body, this.platformCollidersLayer, 40, 1)
 
         if(!hasHit && this.timeForLastTurn + 100 < time) {
@@ -55,6 +63,8 @@ class Enemy  extends Phaser.Physics.Arcade.Sprite {
 
         this.rayGraphics.clear();
         this.rayGraphics.strokeLineShape(ray);
+
+        
     }
 
     setPlatformsColliders(platformCollidersLayer) {
@@ -67,7 +77,10 @@ class Enemy  extends Phaser.Physics.Arcade.Sprite {
         this.health -= source.damage;
                 
         if(this.health <= 0) {
-            console.log('enemy dead');
+            this.setTint(0xff0000);
+            this.setVelocity(0, -200);
+            this.body.checkCollision.none = true;
+            this.setCollideWorldBounds(false);
         }
     }
 }
